@@ -57,28 +57,29 @@ namespace EmployeeOnboarding_DDMS.Infrastructure.Repositories
                 .AnyAsync(u => u.Email == email);
         }
 
-        public async Task<(IReadOnlyList<User> Users, int TotalRecords)> GetPagedAsync(int pageNumber, int pageSize, string? search)
+        public async Task<(IEnumerable<User> users, int total)> GetPagedAsync(int pageNumber, int pageSize, string? search)
         {
-            var query = _dbContext.Users.AsQueryable();
+            var query = _dbContext.Users
+                .Include(u => u.Employee)  // Include Employee relationship for EmployeeId
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                var lowered = search.ToLower();
                 query = query.Where(u =>
-                    u.Email.ToLower().Contains(lowered) ||
-                    u.FirstName.ToLower().Contains(lowered) ||
-                    u.LastName.ToLower().Contains(lowered));
+                    u.Email.Contains(search) ||
+                    u.FirstName.Contains(search) ||
+                    u.LastName.Contains(search));
             }
 
             var total = await query.CountAsync();
-            var items = await query
+
+            var users = await query
                 .OrderByDescending(u => u.Created)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
-            return (items, total);
+            return (users, total);
         }
     }
 }
-

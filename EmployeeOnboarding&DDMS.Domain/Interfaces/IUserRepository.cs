@@ -14,7 +14,7 @@ namespace EmployeeOnboarding_DDMS.Domain.Interfaces
         // Custom Operations
         Task<User?> GetByEmailAsync(string email);
         Task<bool> EmailExistsAsync(string email);
-        Task<(IReadOnlyList<User> Users, int TotalRecords)> GetPagedAsync(int pageNumber, int pageSize, string? search);
+        Task<(IEnumerable<User> users, int total)> GetPagedAsync(int pageNumber, int pageSize, string? search);
     }
 }
 

@@ -420,6 +420,7 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
             return new AdminUserDto
             {
                 UserId = user.Id,
+                EmployeeId = user.Employee?.Id,  // Include EmployeeId if Employee relationship exists
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
