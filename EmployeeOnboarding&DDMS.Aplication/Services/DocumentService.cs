@@ -13,19 +13,28 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
     {
         private readonly IDocumentRepository _documentRepository;
         private readonly IOnboardingTaskRepository _taskRepository;
+        private readonly IEmployeeRepository _employeeRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IFileStorageService _fileStorageService;
+        private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
         private const long MaxFileSize = 10 * 1024 * 1024; // 10 MB
 
         public DocumentService(
             IDocumentRepository documentRepository,
             IOnboardingTaskRepository taskRepository,
+            IEmployeeRepository employeeRepository,
+            IUserRepository userRepository,
             IFileStorageService fileStorageService,
+            IEmailService emailService,
             IMapper mapper)
         {
             _documentRepository = documentRepository;
             _taskRepository = taskRepository;
+            _employeeRepository = employeeRepository;
+            _userRepository = userRepository;
             _fileStorageService = fileStorageService;
+            _emailService = emailService;
             _mapper = mapper;
         }
 
@@ -171,8 +180,58 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
             await _documentRepository.UpdateAsync(document);
             var documentDto = _mapper.Map<DocumentDto>(document);
 
+            // Send email notification to employee
+            try
+            {
+                // Get task and employee details
+                var task = await _taskRepository.GetByIdAsync(document.OnboardingTaskId);
+                var employee = task != null ? await _employeeRepository.GetByIdAsync(task.EmployeeId) : null;
+                
+                if (employee != null && task != null)
+                {
+                    var employeeName = $"{employee.FirstName} {employee.LastName}";
+                    var taskName = task.TaskTemplate?.Name ?? "Onboarding Task";
+                    
+                    // Get reviewer name
+                    var reviewer = await _userRepository.GetByIdAsync(dto.ReviewedBy);
+                    var reviewerName = "HR Team";
+                    if (reviewer?.Employee != null)
+                    {
+                        reviewerName = $"{reviewer.Employee.FirstName} {reviewer.Employee.LastName}";
+                    }
+                    
+                    if (dto.Status == DocumentStatus.Approved)
+                    {
+                        await _emailService.SendDocumentApprovedEmailAsync(
+                            employee.Email,
+                            employeeName,
+                            document.OriginalFileName,
+                            taskName,
+                            dto.Comments ?? "",
+                            reviewerName
+                        );
+                    }
+                    else if (dto.Status == DocumentStatus.Rejected)
+                    {
+                        await _emailService.SendDocumentRejectedEmailAsync(
+                            employee.Email,
+                            employeeName,
+                            document.OriginalFileName,
+                            taskName,
+                            dto.Comments ?? "No comments provided",
+                            reviewerName
+                        );
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log error but don't fail document review
+                Console.WriteLine($"Failed to send document review email: {ex.Message}");
+            }
+
             var statusMessage = dto.Status == DocumentStatus.Approved ? "approved" : "rejected";
-            return new Response<DocumentDto>(documentDto, $"Document {statusMessage} successfully.");
+            return new Response<DocumentDto>(documentDto, $"Document {statusMessage} successfully. Notification email sent.");
         }
 
         public async Task<Response<bool>> DeleteDocumentAsync(int id)

@@ -101,7 +101,8 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
                     Type = "DocumentReviewed",
                     Message = $"Your document '{doc.OriginalFileName}' was {action}",
                     Date = doc.ReviewedDate!.Value,
-                    Severity = severity
+                    Severity = severity,
+                    Comments = doc.ReviewComments // Include HR review comments
                 });
             }
 

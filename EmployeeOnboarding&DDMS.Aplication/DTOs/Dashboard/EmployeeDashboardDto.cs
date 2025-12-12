@@ -33,6 +33,7 @@ namespace EmployeeOnboarding_DDMS.Aplication.DTOs.Dashboard
         public string Message { get; set; } = string.Empty;
         public DateTime Date { get; set; }
         public string Severity { get; set; } = string.Empty;
+        public string? Comments { get; set; }
     }
 
     public class UpcomingDeadlineDto

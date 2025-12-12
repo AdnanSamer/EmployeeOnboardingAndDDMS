@@ -17,6 +17,7 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
         private readonly ITaskTemplateRepository _templateRepository;
         private readonly IDocumentRepository _documentRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
 
         public OnboardingTaskService(
@@ -25,6 +26,7 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
             ITaskTemplateRepository templateRepository,
             IDocumentRepository documentRepository,
             IUserRepository userRepository,
+            IEmailService emailService,
             IMapper mapper)
         {
             _taskRepository = taskRepository;
@@ -32,6 +34,7 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
             _templateRepository = templateRepository;
             _documentRepository = documentRepository;
             _userRepository = userRepository;
+            _emailService = emailService;
             _mapper = mapper;
         }
 
@@ -77,7 +80,29 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
             var createdTask = await _taskRepository.AddAsync(task);
             var taskDto = await MapToTaskDtoAsync(createdTask);
 
-            return new Response<TaskDto>(taskDto, "Task assigned successfully.");
+            // Send email notification to employee
+            try
+            {
+                var employeeName = $"{employee.FirstName} {employee.LastName}";
+                var taskDescription = template.Description ?? "";
+                var priority = 1; // Default to Medium priority
+                
+                await _emailService.SendTaskAssignedEmailAsync(
+                    employee.Email,
+                    employeeName,
+                    template.Name,
+                    taskDescription,
+                    dto.DueDate,
+                    priority
+                );
+            }
+            catch (Exception ex)
+            {
+                // Log error but don't fail task assignment
+                Console.WriteLine($"Failed to send task assignment email: {ex.Message}");
+            }
+
+            return new Response<TaskDto>(taskDto, "Task assigned successfully. Notification email sent.");
         }
 
         public async Task<Response<TaskDto>> UpdateTaskStatusAsync(int id, UpdateTaskStatusDto dto)

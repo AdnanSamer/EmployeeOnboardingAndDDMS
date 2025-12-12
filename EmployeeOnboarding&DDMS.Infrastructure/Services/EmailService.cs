@@ -63,30 +63,39 @@ namespace EmployeeOnboarding_DDMS.Infrastructure.Services
 
         public async Task SendWelcomeEmailAsync(string employeeEmail, string employeeName, string defaultPassword)
         {
-            var subject = "Welcome to the Team - Your Account Details";
+            var subject = "Welcome to the Employee Onboarding System";
             var body = $@"
                 <html>
-                <body style='font-family: Arial, sans-serif;'>
-                    <h2 style='color: #2563eb;'>Welcome to the Team!</h2>
-                    <p>Hello {employeeName},</p>
-                    <p>Welcome aboard! We're excited to have you join our team. Your employee account has been created.</p>
-                    <div style='background-color: #f3f4f6; padding: 15px; border-left: 4px solid #2563eb; margin: 20px 0;'>
-                        <strong>Login Credentials:</strong><br>
-                        <strong>Email:</strong> {employeeEmail}<br>
-                        <strong>Temporary Password:</strong> {defaultPassword}
+                <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
+                    <div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;'>
+                        <h2 style='color: #667eea;'>Welcome to Employee Onboarding!</h2>
+                        
+                        <p>Hello <strong>{employeeName}</strong>,</p>
+                        
+                        <p>Your account has been created successfully.</p>
+                        
+                        <p>You can now log in using the following credentials:</p>
+                        
+                        <div style='background: #f0f9ff; border-left: 4px solid #3b82f6; padding: 15px; margin: 20px 0;'>
+                            <p style='margin: 0;'><strong>Email:</strong> {employeeEmail}</p>
+                            <p style='margin: 10px 0 0 0;'><strong>Password:</strong> <code style='background: #e0e0e0; padding: 2px 6px; border-radius: 3px;'>{defaultPassword}</code></p>
+                        </div>
+                        
+                        <p>
+                            <a href='https://localhost:4200/login' 
+                               style='display: inline-block; background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin: 10px 0;'>
+                                Login Here
+                            </a>
+                        </p>
+                        
+                        <p>Thank you,<br><strong>HR Team</strong></p>
+                        
+                        <hr style='border: none; border-top: 1px solid #ddd; margin: 20px 0;'>
+                        
+                        <p style='font-size: 12px; color: #999;'>
+                            This is an automated message. Please do not reply to this email.
+                        </p>
                     </div>
-                    <div style='background-color: #fef3c7; padding: 15px; border-left: 4px solid #f59e0b; margin: 20px 0;'>
-                        <strong>⚠️ Important:</strong> You will be required to change your password on first login for security purposes.
-                    </div>
-                    <p><strong>Next Steps:</strong></p>
-                    <ol>
-                        <li>Log in to the Employee Portal using the credentials above</li>
-                        <li>Change your password to something secure and memorable</li>
-                        <li>Complete your onboarding tasks</li>
-                        <li>Upload any required documents</li>
-                    </ol>
-                    <p>If you have any questions or need assistance, please don't hesitate to contact HR.</p>
-                    <p>Best regards,<br>HR Team</p>
                 </body>
                 </html>";
 
@@ -95,19 +104,66 @@ namespace EmployeeOnboarding_DDMS.Infrastructure.Services
 
         public async Task SendTaskAssignedEmailAsync(string employeeEmail, string employeeName, string taskName, DateTime dueDate)
         {
-            var subject = "New Task Assigned - Employee Onboarding";
+            await SendTaskAssignedEmailAsync(employeeEmail, employeeName, taskName, "", dueDate, 1); // Default: no description, medium priority
+        }
+
+        public async Task SendTaskAssignedEmailAsync(string employeeEmail, string employeeName, string taskName, string description, DateTime dueDate, int priority)
+        {
+            var subject = $"New Task Assigned: {taskName}";
+            
+            var priorityColor = priority switch
+            {
+                0 => "#10b981", // Low - Green
+                2 => "#ef4444", // High - Red
+                _ => "#f59e0b"  // Medium - Orange
+            };
+            
+            var priorityText = priority switch
+            {
+                0 => "Low",
+                2 => "High",
+                _ => "Medium"
+            };
+            
+            var formattedDueDate = dueDate.ToString("MMMM dd, yyyy");
+            var descriptionHtml = string.IsNullOrWhiteSpace(description) 
+                ? "" 
+                : $"<p style='margin: 5px 0;'><strong>Description:</strong> {description}</p>";
+            
             var body = $@"
                 <html>
-                <body style='font-family: Arial, sans-serif;'>
-                    <h2 style='color: #2563eb;'>New Task Assigned</h2>
-                    <p>Hello {employeeName},</p>
-                    <p>A new task has been assigned to you as part of your onboarding process:</p>
-                    <div style='background-color: #f3f4f6; padding: 15px; border-left: 4px solid #2563eb; margin: 20px 0;'>
-                        <strong>Task:</strong> {taskName}<br>
-                        <strong>Due Date:</strong> {dueDate:MMMM dd, yyyy}
+                <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
+                    <div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;'>
+                        <h2 style='color: #667eea;'>New Task Assigned</h2>
+                        
+                        <p>Hello <strong>{employeeName}</strong>,</p>
+                        
+                        <p>A new task has been assigned to you.</p>
+                        
+                        <div style='background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;'>
+                            <h3 style='margin: 0 0 10px 0; color: #333;'>{taskName}</h3>
+                            {descriptionHtml}
+                            <p style='margin: 5px 0;'><strong>Due Date:</strong> {formattedDueDate}</p>
+                            <p style='margin: 5px 0;'><strong>Priority:</strong> <span style='color: {priorityColor}; font-weight: bold;'>{priorityText}</span></p>
+                        </div>
+                        
+                        <p>
+                            <a href='https://localhost:4200/my-tasks' 
+                               style='display: inline-block; background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin: 10px 0;'>
+                                View Task
+                            </a>
+                        </p>
+                        
+                        <p>Please complete this task by the due date.</p>
+                        
+                        <p>Thank you,<br><strong>HR Team</strong></p>
+                        
+                        <hr style='border: none; border-top: 1px solid #ddd; margin: 20px 0;'>
+                        
+                        <p style='font-size: 12px; color: #999;'>
+                            This is an automated notification. Please do not reply to this email.
+                        </p>
                     </div>
-                    <p>Please log in to the Employee Portal to view the task details and complete it before the due date.</p>
-                    <p>Best regards,<br>HR Team</p>
                 </body>
                 </html>";
 
@@ -160,20 +216,58 @@ namespace EmployeeOnboarding_DDMS.Infrastructure.Services
 
         public async Task SendDocumentApprovedEmailAsync(string employeeEmail, string employeeName, string documentName, string taskName)
         {
-            var subject = "✅ Document Approved";
+            await SendDocumentApprovedEmailAsync(employeeEmail, employeeName, documentName, taskName, "", "HR Team");
+        }
+
+        public async Task SendDocumentApprovedEmailAsync(string employeeEmail, string employeeName, string documentName, string taskName, string comments, string reviewerName)
+        {
+            var subject = $"Document Approved: {documentName}";
+            
+            var commentsSection = string.IsNullOrWhiteSpace(comments) ? "" : $@"
+                <div style='background: #f0f9ff; border-left: 4px solid #3b82f6; padding: 15px; margin: 20px 0;'>
+                    <p style='margin: 0 0 5px 0;'><strong>Reviewer Comments:</strong></p>
+                    <p style='margin: 0; color: #1e40af;'>{comments}</p>
+                </div>
+            ";
+            
             var body = $@"
                 <html>
-                <body style='font-family: Arial, sans-serif;'>
-                    <h2 style='color: #16a34a;'>Document Approved</h2>
-                    <p>Hello {employeeName},</p>
-                    <p>Great news! Your document has been approved:</p>
-                    <div style='background-color: #dcfce7; padding: 15px; border-left: 4px solid #16a34a; margin: 20px 0;'>
-                        <strong>Document:</strong> {documentName}<br>
-                        <strong>Task:</strong> {taskName}<br>
-                        <strong>Status:</strong> Approved ✓
+                <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
+                    <div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;'>
+                        <div style='background: #10b981; color: white; padding: 15px; border-radius: 8px 8px 0 0; margin: -20px -20px 20px -20px;'>
+                            <h2 style='margin: 0;'>✓ Document Approved</h2>
+                        </div>
+                        
+                        <p>Hello <strong>{employeeName}</strong>,</p>
+                        
+                        <p>Your document has been reviewed and <strong style='color: #10b981;'>approved</strong>.</p>
+                        
+                        <div style='background: #f0fdf4; border-left: 4px solid #10b981; padding: 15px; margin: 20px 0;'>
+                            <p style='margin: 0 0 10px 0;'><strong>Document:</strong> {documentName}</p>
+                            <p style='margin: 0 0 10px 0;'><strong>Task:</strong> {taskName}</p>
+                            <p style='margin: 0 0 10px 0;'><strong>Status:</strong> <span style='color: #10b981;'>Approved</span></p>
+                            <p style='margin: 0;'><strong>Reviewed By:</strong> {reviewerName}</p>
+                        </div>
+                        
+                        {commentsSection}
+                        
+                        <p>
+                            <a href='https://localhost:4200/my-documents' 
+                               style='display: inline-block; background: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin: 10px 0;'>
+                                View Documents
+                            </a>
+                        </p>
+                        
+                        <p>Great job! You can now proceed with the next steps in your onboarding.</p>
+                        
+                        <p>Thank you,<br><strong>HR Team</strong></p>
+                        
+                        <hr style='border: none; border-top: 1px solid #ddd; margin: 20px 0;'>
+                        
+                        <p style='font-size: 12px; color: #999;'>
+                            This is an automated notification. Please do not reply to this email.
+                        </p>
                     </div>
-                    <p>You can now proceed with the next steps in your onboarding process.</p>
-                    <p>Best regards,<br>HR Team</p>
                 </body>
                 </html>";
 
@@ -182,21 +276,53 @@ namespace EmployeeOnboarding_DDMS.Infrastructure.Services
 
         public async Task SendDocumentRejectedEmailAsync(string employeeEmail, string employeeName, string documentName, string taskName, string reason)
         {
-            var subject = "Document Rejected - Action Required";
+            await SendDocumentRejectedEmailAsync(employeeEmail, employeeName, documentName, taskName, reason, "HR Team");
+        }
+
+        public async Task SendDocumentRejectedEmailAsync(string employeeEmail, string employeeName, string documentName, string taskName, string reason, string reviewerName)
+        {
+            var subject = $"Document Rejected: {documentName} - Action Required";
             var body = $@"
                 <html>
-                <body style='font-family: Arial, sans-serif;'>
-                    <h2 style='color: #dc2626;'>Document Rejected</h2>
-                    <p>Hello {employeeName},</p>
-                    <p>Your document has been reviewed and requires resubmission:</p>
-                    <div style='background-color: #fee2e2; padding: 15px; border-left: 4px solid #dc2626; margin: 20px 0;'>
-                        <strong>Document:</strong> {documentName}<br>
-                        <strong>Task:</strong> {taskName}<br>
-                        <strong>Status:</strong> Rejected<br>
-                        <strong>Reason:</strong> {reason}
+                <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
+                    <div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;'>
+                        <div style='background: #ef4444; color: white; padding: 15px; border-radius: 8px 8px 0 0; margin: -20px -20px 20px -20px;'>
+                            <h2 style='margin: 0;'>✗ Document Rejected</h2>
+                        </div>
+                        
+                        <p>Hello <strong>{employeeName}</strong>,</p>
+                        
+                        <p>Your document has been reviewed and <strong style='color: #ef4444;'>requires corrections</strong>.</p>
+                        
+                        <div style='background: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; margin: 20px 0;'>
+                            <p style='margin: 0 0 10px 0;'><strong>Document:</strong> {documentName}</p>
+                            <p style='margin: 0 0 10px 0;'><strong>Task:</strong> {taskName}</p>
+                            <p style='margin: 0 0 10px 0;'><strong>Status:</strong> <span style='color: #ef4444;'>Rejected</span></p>
+                            <p style='margin: 0;'><strong>Reviewed By:</strong> {reviewerName}</p>
+                        </div>
+                        
+                        <div style='background: #fff7ed; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0;'>
+                            <p style='margin: 0 0 5px 0;'><strong>Review Comments:</strong></p>
+                            <p style='margin: 0; color: #92400e;'>{reason}</p>
+                        </div>
+                        
+                        <p>
+                            <a href='https://localhost:4200/my-documents' 
+                               style='display: inline-block; background: #ef4444; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin: 10px 0;'>
+                                Upload Corrected Document
+                            </a>
+                        </p>
+                        
+                        <p>Please review the comments above, make the necessary corrections, and re-upload your document.</p>
+                        
+                        <p>Thank you,<br><strong>HR Team</strong></p>
+                        
+                        <hr style='border: none; border-top: 1px solid #ddd; margin: 20px 0;'>
+                        
+                        <p style='font-size: 12px; color: #999;'>
+                            This is an automated notification. Please do not reply to this email.
+                        </p>
                     </div>
-                    <p>Please review the feedback and upload a corrected version of the document.</p>
-                    <p>Best regards,<br>HR Team</p>
                 </body>
                 </html>";
 
