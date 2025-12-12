@@ -1,0 +1,14 @@
+namespace EmployeeOnboarding_DDMS.Aplication.Interfaces
+{
+    public interface IEmailService
+    {
+        Task SendEmailAsync(string to, string subject, string body, bool isHtml = true);
+        Task SendWelcomeEmailAsync(string employeeEmail, string employeeName, string defaultPassword);
+        Task SendTaskAssignedEmailAsync(string employeeEmail, string employeeName, string taskName, DateTime dueDate);
+        Task SendTaskDueSoonEmailAsync(string employeeEmail, string employeeName, string taskName, DateTime dueDate, int daysRemaining);
+        Task SendTaskOverdueEmailAsync(string employeeEmail, string employeeName, string taskName, DateTime dueDate, int daysOverdue);
+        Task SendDocumentApprovedEmailAsync(string employeeEmail, string employeeName, string documentName, string taskName);
+        Task SendDocumentRejectedEmailAsync(string employeeEmail, string employeeName, string documentName, string taskName, string reason);
+        Task SendOnboardingCompletedEmailAsync(string employeeEmail, string employeeName, DateTime completionDate);
+    }
+}

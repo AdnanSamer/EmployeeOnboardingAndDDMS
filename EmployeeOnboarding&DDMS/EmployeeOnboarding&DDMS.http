@@ -1,0 +1,6 @@
+@EmployeeOnboarding_DDMS_HostAddress = http://localhost:5210
+
+GET {{EmployeeOnboarding_DDMS_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

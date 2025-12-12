@@ -1,0 +1,90 @@
+using EmployeeOnboarding_DDMS.Aplication.DTOs.Tasks;
+using EmployeeOnboarding_DDMS.Aplication.Interfaces;
+using EmployeeOnboarding_DDMS.Aplication.Wrappers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace EmployeeOnboarding_DDMS.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class TaskTemplatesController : ControllerBase
+    {
+        private readonly ITaskTemplateService _taskTemplateService;
+
+        public TaskTemplatesController(ITaskTemplateService taskTemplateService)
+        {
+            _taskTemplateService = taskTemplateService;
+        }
+
+        /// <summary>
+        /// Get all active task templates
+        /// </summary>
+        [HttpGet]
+        public async Task<ActionResult<Response<IEnumerable<TaskTemplateDto>>>> GetAllTemplates()
+        {
+            var result = await _taskTemplateService.GetAllTemplatesAsync();
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Get task template by ID
+        /// </summary>
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Response<TaskTemplateDto>>> GetTemplate(int id)
+        {
+            var result = await _taskTemplateService.GetTemplateByIdAsync(id);
+            if (!result.Succeeded)
+            {
+                return NotFound(result);
+            }
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Create a new task template
+        /// </summary>
+        [HttpPost]
+        [Authorize(Roles = "HR,Admin")]
+        public async Task<ActionResult<Response<TaskTemplateDto>>> CreateTemplate([FromBody] CreateTaskTemplateDto dto)
+        {
+            var result = await _taskTemplateService.CreateTemplateAsync(dto);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Update task template
+        /// </summary>
+        [HttpPut("{id}")]
+        [Authorize(Roles = "HR,Admin")]
+        public async Task<ActionResult<Response<TaskTemplateDto>>> UpdateTemplate(int id, [FromBody] CreateTaskTemplateDto dto)
+        {
+            var result = await _taskTemplateService.UpdateTemplateAsync(id, dto);
+            if (!result.Succeeded)
+            {
+                return NotFound(result);
+            }
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Delete (deactivate) task template
+        /// </summary>
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "HR,Admin")]
+        public async Task<ActionResult<Response<bool>>> DeleteTemplate(int id)
+        {
+            var result = await _taskTemplateService.DeleteTemplateAsync(id);
+            if (!result.Succeeded)
+            {
+                return NotFound(result);
+            }
+            return Ok(result);
+        }
+    }
+}
+
