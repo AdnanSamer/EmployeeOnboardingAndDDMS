@@ -9,7 +9,7 @@ namespace EmployeeOnboarding_DDMS.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "AdminHR")]
     public class AdminController : ControllerBase
     {
         private readonly IAdminService _adminService;

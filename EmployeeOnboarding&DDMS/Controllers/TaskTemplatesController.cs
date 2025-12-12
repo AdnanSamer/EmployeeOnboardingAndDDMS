@@ -45,7 +45,7 @@ namespace EmployeeOnboarding_DDMS.Controllers
         /// Create a new task template
         /// </summary>
         [HttpPost]
-        [Authorize(Roles = "HR,Admin")]
+        [Authorize(Roles = "AdminHR")]
         public async Task<ActionResult<Response<TaskTemplateDto>>> CreateTemplate([FromBody] CreateTaskTemplateDto dto)
         {
             var result = await _taskTemplateService.CreateTemplateAsync(dto);
@@ -60,7 +60,7 @@ namespace EmployeeOnboarding_DDMS.Controllers
         /// Update task template
         /// </summary>
         [HttpPut("{id}")]
-        [Authorize(Roles = "HR,Admin")]
+        [Authorize(Roles = "AdminHR")]
         public async Task<ActionResult<Response<TaskTemplateDto>>> UpdateTemplate(int id, [FromBody] CreateTaskTemplateDto dto)
         {
             var result = await _taskTemplateService.UpdateTemplateAsync(id, dto);
@@ -75,7 +75,7 @@ namespace EmployeeOnboarding_DDMS.Controllers
         /// Delete (deactivate) task template
         /// </summary>
         [HttpDelete("{id}")]
-        [Authorize(Roles = "HR,Admin")]
+        [Authorize(Roles = "AdminHR")]
         public async Task<ActionResult<Response<bool>>> DeleteTemplate(int id)
         {
             var result = await _taskTemplateService.DeleteTemplateAsync(id);

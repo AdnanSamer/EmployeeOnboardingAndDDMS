@@ -161,15 +161,13 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
             await EnsurePermissionsSeededAsync();
 
             var permissions = await _permissionRepository.GetAllAsync();
-            var adminPerms = await EnsureRolePermissionsAsync(2, permissions.Select(p => p.Id)); // Admin gets all
-            var hrPerms = await EnsureRolePermissionsAsync(0, permissions.Where(p => p.PermissionName is "ViewEmployees" or "EditTasks" or "UploadFiles" or "AccessReports").Select(p => p.Id));
+            var adminHRPerms = await EnsureRolePermissionsAsync(0, permissions.Select(p => p.Id)); // AdminHR gets all
             var employeePerms = await EnsureRolePermissionsAsync(1, permissions.Where(p => p.PermissionName is "UploadFiles").Select(p => p.Id));
 
             var roles = new List<RoleDto>
             {
-                new RoleDto { RoleId = 0, RoleName = "HR", Permissions = MapPermissions(hrPerms) },
-                new RoleDto { RoleId = 1, RoleName = "Employee", Permissions = MapPermissions(employeePerms) },
-                new RoleDto { RoleId = 2, RoleName = "Admin", Permissions = MapPermissions(adminPerms) }
+                new RoleDto { RoleId = 0, RoleName = "Admin/HR", Permissions = MapPermissions(adminHRPerms) },
+                new RoleDto { RoleId = 1, RoleName = "Employee", Permissions = MapPermissions(employeePerms) }
             };
 
             return new Response<IEnumerable<RoleDto>>(roles, "Roles retrieved successfully");
@@ -434,16 +432,14 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
 
         private static int MapToSpecRole(UserRole role) => role switch
         {
-            UserRole.Admin => 2,
-            UserRole.HR => 0,
+            UserRole.AdminHR => 0,  // Admin/HR unified
             UserRole.Employee => 1,
             _ => 1
         };
 
         private static UserRole MapToDomainRole(int roleId) => roleId switch
         {
-            2 => UserRole.Admin,
-            0 => UserRole.HR,
+            0 => UserRole.AdminHR,  // Admin/HR unified
             1 => UserRole.Employee,
             _ => UserRole.Employee
         };

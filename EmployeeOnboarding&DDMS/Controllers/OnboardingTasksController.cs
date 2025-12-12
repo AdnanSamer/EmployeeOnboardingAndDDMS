@@ -19,7 +19,7 @@ namespace EmployeeOnboarding_DDMS.Controllers
 
         // GET: api/OnboardingTasks
         [HttpGet]
-        [Authorize(Roles = "HR,Admin")]
+        [Authorize(Roles = "AdminHR")]
         public async Task<IActionResult> GetAllTasks()
         {
             var result = await _taskService.GetAllTasksAsync();

@@ -2,9 +2,8 @@ namespace EmployeeOnboarding_DDMS.Domain.Enums
 {
     public enum UserRole
     {
-        Admin = 1,
-        HR = 2,
-        Employee = 3
+        AdminHR = 1,    // Combined Admin and HR - full system access
+        Employee = 3    // Employee - limited access to own data
     }
 }
 
