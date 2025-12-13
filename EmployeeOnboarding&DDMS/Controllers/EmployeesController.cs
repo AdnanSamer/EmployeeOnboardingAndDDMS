@@ -16,9 +16,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             _employeeService = employeeService;
         }
 
-        /// <summary>
-        /// Create a new employee
-        /// </summary>
         [HttpPost]
         public async Task<ActionResult<Response<EmployeeDto>>> CreateEmployee([FromBody] CreateEmployeeDto dto)
         {
@@ -30,9 +27,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Get employee by ID
-        /// </summary>
         [HttpGet("{id}")]
         public async Task<ActionResult<Response<EmployeeDto>>> GetEmployee(int id)
         {
@@ -44,9 +38,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Get all employees with filtering and pagination
-        /// </summary>
         [HttpGet]
         public async Task<ActionResult<PagedResponse<IEnumerable<EmployeeDto>>>> GetEmployees([FromQuery] EmployeeFilterDto filter)
         {
@@ -54,9 +45,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Update employee information
-        /// </summary>
         [HttpPut("{id}")]
         public async Task<ActionResult<Response<EmployeeDto>>> UpdateEmployee(int id, [FromBody] UpdateEmployeeDto dto)
         {
@@ -69,9 +57,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Deactivate an employee
-        /// </summary>
         [HttpDelete("{id}")]
         public async Task<ActionResult<Response<bool>>> DeactivateEmployee(int id)
         {
@@ -83,9 +68,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Mark employee onboarding as completed
-        /// </summary>
         [HttpPost("{id}/complete-onboarding")]
         public async Task<ActionResult<Response<bool>>> CompleteOnboarding(int id)
         {

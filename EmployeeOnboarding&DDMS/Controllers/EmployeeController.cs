@@ -23,9 +23,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             _summaryService = summaryService;
         }
 
-        /// <summary>
-        /// Get employee dashboard data
-        /// </summary>
         [HttpGet("dashboard")]
         public async Task<ActionResult<Response<EmployeeDashboardDto>>> GetDashboard()
         {
@@ -44,9 +41,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Get employee onboarding summary
-        /// </summary>
         [HttpGet("{id}/onboarding-summary")]
         public async Task<ActionResult<Response<OnboardingSummaryDto>>> GetOnboardingSummary(int id)
         {

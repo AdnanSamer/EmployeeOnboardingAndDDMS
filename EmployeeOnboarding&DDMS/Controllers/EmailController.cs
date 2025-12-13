@@ -17,9 +17,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             _emailService = emailService;
         }
 
-        /// <summary>
-        /// Test email sending functionality
-        /// </summary>
         [HttpPost("test")]
         public async Task<ActionResult<Response<bool>>> SendTestEmail([FromBody] TestEmailRequest request)
         {

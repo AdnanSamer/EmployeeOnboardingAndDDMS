@@ -16,9 +16,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             _authService = authService;
         }
 
-        /// <summary>
-        /// User login
-        /// </summary>
         [HttpPost("login")]
         public async Task<ActionResult<Response<AuthResponseDto>>> Login([FromBody] LoginDto loginDto)
         {
@@ -30,9 +27,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// User registration
-        /// </summary>
         [HttpPost("register")]
         public async Task<ActionResult<Response<AuthResponseDto>>> Register([FromBody] RegisterDto registerDto)
         {
@@ -44,9 +38,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Change password
-        /// </summary>
         [HttpPost("change-password")]
         [Microsoft.AspNetCore.Authorization.Authorize]
         public async Task<ActionResult<Response<bool>>> ChangePassword([FromBody] ChangePasswordDto dto)

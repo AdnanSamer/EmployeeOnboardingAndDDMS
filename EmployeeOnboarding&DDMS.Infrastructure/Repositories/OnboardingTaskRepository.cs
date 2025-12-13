@@ -14,8 +14,6 @@ namespace EmployeeOnboarding_DDMS.Infrastructure.Repositories
         {
             _dbContext = dbContext;
         }
-
-        // CRUD Operations
         public async Task<OnboardingTask?> GetByIdAsync(int id)
         {
             return await _dbContext.OnboardingTasks
@@ -48,8 +46,6 @@ namespace EmployeeOnboarding_DDMS.Infrastructure.Repositories
             _dbContext.OnboardingTasks.Remove(entity);
             await _dbContext.SaveChangesAsync();
         }
-
-        // Custom Operations
         public async Task<IEnumerable<OnboardingTask>> GetByEmployeeIdAsync(int employeeId)
         {
             return await _dbContext.OnboardingTasks

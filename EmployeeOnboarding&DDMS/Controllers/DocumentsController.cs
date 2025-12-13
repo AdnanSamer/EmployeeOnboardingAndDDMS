@@ -16,12 +16,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             _documentService = documentService;
         }
 
-        /// <summary>
-        /// Upload a document for a task
-        /// </summary>
-        /// <summary>
-        /// Upload a document for a task
-        /// </summary>
         [HttpPost("upload/{taskId}")]
         [Consumes("multipart/form-data")]
         public async Task<ActionResult<Response<DocumentDto>>> UploadDocument(
@@ -41,9 +35,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Get document by ID
-        /// </summary>
         [HttpGet("{id}")]
         public async Task<ActionResult<Response<DocumentDto>>> GetDocument(int id)
         {
@@ -55,9 +46,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Get all documents for a task
-        /// </summary>
         [HttpGet("task/{taskId}")]
         public async Task<ActionResult<Response<IEnumerable<DocumentDto>>>> GetTaskDocuments(int taskId)
         {
@@ -65,9 +53,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Download document file
-        /// </summary>
         [HttpGet("{id}/download")]
         public async Task<IActionResult> DownloadDocument(int id)
         {
@@ -86,9 +71,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return File(result.Data, document.Data.ContentType, document.Data.OriginalFileName);
         }
 
-        /// <summary>
-        /// Preview document (returns PDF bytes)
-        /// </summary>
         [HttpGet("{id}/preview")]
         public async Task<IActionResult> PreviewDocument(int id)
         {
@@ -101,9 +83,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return File(result.Data, "application/pdf");
         }
 
-        /// <summary>
-        /// Review/approve/reject a document (HR only)
-        /// </summary>
         [HttpPut("{id}/review")]
         public async Task<ActionResult<Response<DocumentDto>>> ReviewDocument(int id, [FromBody] ReviewDocumentDto dto)
         {
@@ -116,9 +95,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Delete a document
-        /// </summary>
         [HttpDelete("{id}")]
         public async Task<ActionResult<Response<bool>>> DeleteDocument(int id)
         {
@@ -130,9 +106,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Generate onboarding summary PDF for an employee
-        /// </summary>
         [HttpGet("generate-summary/{employeeId}")]
         public async Task<IActionResult> GenerateSummary(int employeeId, [FromServices] Aplication.Interfaces.IPdfSummaryService pdfSummaryService)
         {

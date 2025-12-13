@@ -9,12 +9,10 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddMemoryCache();
 
-// Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = jwtSettings["SecretKey"] ?? "YourSuperSecretKeyThatShouldBeAtLeast32CharactersLongForSecurity!";
 
@@ -52,7 +50,6 @@ builder.Services.AddSwaggerGen(c =>
         Description = "API for Employee Onboarding and Digital Document Management System"
     });
     
-    // Add JWT Bearer Token Authentication to Swagger
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
@@ -79,39 +76,31 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// Add CORS
 builder.Services.AddCors();
 
-// Add static files support for file storage
 builder.Services.AddDirectoryBrowser();
 
-// Register Syncfusion license
 SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1JFaF5cXGRCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWH1ecXRSRmZeWUF+X0tWYEA=");
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// Add exception handling middleware
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 
-// Enable static files
 app.UseStaticFiles();
 
-// Enable CORS for Angular frontend
 app.UseCors(policy => policy
     .AllowAnyOrigin()
     .AllowAnyMethod()
     .AllowAnyHeader());
 
-// Authentication & Authorization must be in this order
 app.UseAuthentication();
 app.UseAuthorization();
 

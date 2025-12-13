@@ -17,7 +17,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             _taskService = taskService;
         }
 
-        // GET: api/OnboardingTasks
         [HttpGet]
         [Authorize(Roles = "AdminHR")]
         public async Task<IActionResult> GetAllTasks()
@@ -32,9 +31,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Assign a task to an employee
-        /// </summary>
         [HttpPost]
         public async Task<ActionResult<Response<TaskDto>>> AssignTask([FromBody] AssignTaskDto dto)
         {
@@ -46,9 +42,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Get task by ID
-        /// </summary>
         [HttpGet("{id}")]
         public async Task<ActionResult<Response<TaskDto>>> GetTask(int id)
         {
@@ -60,9 +53,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Get all tasks for a specific employee
-        /// </summary>
         [HttpGet("employee/{employeeId}")]
         public async Task<ActionResult<Response<IEnumerable<TaskDto>>>> GetEmployeeTasks(int employeeId)
         {
@@ -70,9 +60,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Get enhanced employee tasks with overdue info, documents, and completion requirements
-        /// </summary>
         [HttpGet("employee/{employeeId}/enhanced")]
         public async Task<ActionResult<Response<IEnumerable<EnhancedTaskDto>>>> GetEnhancedEmployeeTasks(int employeeId)
         {
@@ -80,10 +67,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-
-        /// <summary>
-        /// Get all overdue tasks
-        /// </summary>
         [HttpGet("overdue")]
         public async Task<ActionResult<Response<IEnumerable<TaskDto>>>> GetOverdueTasks()
         {
@@ -91,9 +74,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Update task status
-        /// </summary>
         [HttpPut("{id}/status")]
         public async Task<ActionResult<Response<TaskDto>>> UpdateTaskStatus(int id, [FromBody] UpdateTaskStatusDto dto)
         {
@@ -106,9 +86,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Reopen a completed task (HR only)
-        /// </summary>
         [HttpPost("{id}/reopen")]
         public async Task<ActionResult<Response<bool>>> ReopenTask(int id, [FromBody] ReopenTaskDto dto)
         {

@@ -18,9 +18,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             _notificationService = notificationService;
         }
 
-        /// <summary>
-        /// Get employee notifications
-        /// </summary>
         [HttpGet("employee")]
         public async Task<ActionResult<Response<IEnumerable<NotificationDto>>>> GetEmployeeNotifications([FromQuery] bool unreadOnly = false)
         {
@@ -34,9 +31,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Get unread notification count
-        /// </summary>
         [HttpGet("unread-count")]
         public async Task<ActionResult<Response<int>>> GetUnreadCount()
         {
@@ -50,9 +44,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Mark notification as read
-        /// </summary>
         [HttpPut("{id}/mark-read")]
         public async Task<ActionResult<Response<bool>>> MarkAsRead(int id)
         {
@@ -71,9 +62,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Mark all notifications as read
-        /// </summary>
         [HttpPut("mark-all-read")]
         public async Task<ActionResult<Response<int>>> MarkAllAsRead()
         {

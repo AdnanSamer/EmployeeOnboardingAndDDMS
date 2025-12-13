@@ -5,7 +5,7 @@ namespace EmployeeOnboarding_DDMS.Aplication.DTOs.Admin
     public class AdminUserDto
     {
         public int UserId { get; set; }
-        public int? EmployeeId { get; set; }  // Nullable - only populated for Employee users
+        public int? EmployeeId { get; set; }
         public string Email { get; set; } = string.Empty;
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;

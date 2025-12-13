@@ -15,7 +15,6 @@ namespace EmployeeOnboarding_DDMS.Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
-        // CRUD Operations
         public async Task<Employee?> GetByIdAsync(int id)
         {
             return await _dbContext.Employees
@@ -47,7 +46,6 @@ namespace EmployeeOnboarding_DDMS.Infrastructure.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        // Custom Operations
         public async Task<Employee?> GetByEmailAsync(string email)
         {
             return await _dbContext.Employees

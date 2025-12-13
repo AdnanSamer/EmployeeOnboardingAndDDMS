@@ -26,18 +26,15 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
 
         public async Task<Response<EmployeeDashboardDto>> GetDashboardDataAsync(int userId)
         {
-            // Get employee by user ID
             var employee = await _employeeRepository.GetByUserIdAsync(userId);
             if (employee == null)
             {
                 return new Response<EmployeeDashboardDto>("Employee not found for this user.");
             }
 
-            // Get all tasks for employee
             var tasks = await _taskRepository.GetByEmployeeIdAsync(employee.Id);
             var tasksList = tasks.ToList();
 
-            // Calculate onboarding progress
             var totalTasks = tasksList.Count;
             var completedTasks = tasksList.Count(t => t.Status == TaskStatus.Completed);
             var pendingTasks = tasksList.Count(t => t.Status == TaskStatus.Pending);
@@ -49,7 +46,6 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
 
             var progressPercentage = totalTasks > 0 ? (double)completedTasks / totalTasks * 100 : 0;
 
-            // Estimate completion date (simple calculation based on average completion rate)
             DateTime? estimatedCompletion = null;
             if (completedTasks > 0 && completedTasks < totalTasks)
             {
@@ -63,7 +59,6 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
                 }
             }
 
-            // Get all documents for employee's tasks
             var allDocuments = new List<Domain.Entities.Document>();
             foreach (var task in tasksList)
             {
@@ -76,10 +71,8 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
             var pendingDocuments = allDocuments.Count(d => d.Status == DocumentStatus.Pending);
             var rejectedDocuments = allDocuments.Count(d => d.Status == DocumentStatus.Rejected);
 
-            // Get recent activity (last 5 events)
             var recentActivity = new List<ActivityDto>();
             
-            // Add completed tasks
             foreach (var task in tasksList.Where(t => t.CompletedDate != null).OrderByDescending(t => t.CompletedDate).Take(3))
             {
                 recentActivity.Add(new ActivityDto
@@ -91,7 +84,6 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
                 });
             }
 
-            // Add recent document reviews
             foreach (var doc in allDocuments.Where(d => d.ReviewedDate != null).OrderByDescending(d => d.ReviewedDate).Take(2))
             {
                 var severity = doc.Status == DocumentStatus.Approved ? "success" : "danger";
@@ -102,14 +94,12 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
                     Message = $"Your document '{doc.OriginalFileName}' was {action}",
                     Date = doc.ReviewedDate!.Value,
                     Severity = severity,
-                    Comments = doc.ReviewComments // Include HR review comments
+                    Comments = doc.ReviewComments 
                 });
             }
 
-            // Sort and take top 5
             recentActivity = recentActivity.OrderByDescending(a => a.Date).Take(5).ToList();
 
-            // Get upcoming deadlines (next 5 tasks by due date)
             var upcomingDeadlines = tasksList
                 .Where(t => t.Status != TaskStatus.Completed && t.Status != TaskStatus.Canceled)
                 .OrderBy(t => t.DueDate)

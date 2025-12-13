@@ -17,9 +17,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             _taskTemplateService = taskTemplateService;
         }
 
-        /// <summary>
-        /// Get all active task templates
-        /// </summary>
         [HttpGet]
         public async Task<ActionResult<Response<IEnumerable<TaskTemplateDto>>>> GetAllTemplates()
         {
@@ -27,9 +24,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Get task template by ID
-        /// </summary>
         [HttpGet("{id}")]
         public async Task<ActionResult<Response<TaskTemplateDto>>> GetTemplate(int id)
         {
@@ -41,9 +35,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Create a new task template
-        /// </summary>
         [HttpPost]
         [Authorize(Roles = "AdminHR")]
         public async Task<ActionResult<Response<TaskTemplateDto>>> CreateTemplate([FromBody] CreateTaskTemplateDto dto)
@@ -56,9 +47,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Update task template
-        /// </summary>
         [HttpPut("{id}")]
         [Authorize(Roles = "AdminHR")]
         public async Task<ActionResult<Response<TaskTemplateDto>>> UpdateTemplate(int id, [FromBody] CreateTaskTemplateDto dto)
@@ -71,9 +59,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Delete (deactivate) task template
-        /// </summary>
         [HttpDelete("{id}")]
         [Authorize(Roles = "AdminHR")]
         public async Task<ActionResult<Response<bool>>> DeleteTemplate(int id)

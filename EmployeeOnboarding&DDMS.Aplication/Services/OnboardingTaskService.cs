@@ -40,7 +40,6 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
 
         public async Task<Response<TaskDto>> AssignTaskAsync(AssignTaskDto dto)
         {
-            // CRITICAL FIX: Validate AssignedBy user exists
             var assigningUser = await _userRepository.GetByIdAsync(dto.AssignedBy);
             if (assigningUser == null)
             {
@@ -70,7 +69,6 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
                 Notes = dto.Notes
             };
 
-            // Update employee onboarding status
             if (employee.OnboardingStatus == OnboardingStatus.NotStarted)
             {
                 employee.OnboardingStatus = OnboardingStatus.InProgress;
@@ -80,12 +78,11 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
             var createdTask = await _taskRepository.AddAsync(task);
             var taskDto = await MapToTaskDtoAsync(createdTask);
 
-            // Send email notification to employee
             try
             {
                 var employeeName = $"{employee.FirstName} {employee.LastName}";
                 var taskDescription = template.Description ?? "";
-                var priority = 1; // Default to Medium priority
+                var priority = 1; 
                 
                 await _emailService.SendTaskAssignedEmailAsync(
                     employee.Email,
@@ -98,7 +95,6 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
             }
             catch (Exception ex)
             {
-                // Log error but don't fail task assignment
                 Console.WriteLine($"Failed to send task assignment email: {ex.Message}");
             }
 
@@ -113,13 +109,11 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
                 return new Response<TaskDto>("Task not found.");
             }
 
-            // Business rule: Completed tasks cannot be modified unless reopened by HR
             if (task.Status == Domain.Enums.TaskStatus.Completed && dto.Status != Domain.Enums.TaskStatus.Completed)
             {
                 return new Response<TaskDto>("Completed tasks cannot be modified. Please reopen the task first.");
             }
 
-            // Business rule: Cannot mark as Completed if required documents are not approved
             if (dto.Status == Domain.Enums.TaskStatus.Completed)
             {
                 var template = await _templateRepository.GetByIdAsync(task.TaskTemplateId);
@@ -170,7 +164,6 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
 
         public async Task<Response<IEnumerable<EnhancedTaskDto>>> GetEnhancedEmployeeTasksAsync(int userId)
         {
-            // CRITICAL FIX: userId is passed from frontend, need to find employee first
             var employee = await _employeeRepository.GetByUserIdAsync(userId);
             
             if (employee == null)
@@ -178,7 +171,6 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
                 return new Response<IEnumerable<EnhancedTaskDto>>("Employee not found for this user.");
             }
             
-            // Now get tasks using the actual EmployeeId
             var tasks = await _taskRepository.GetByEmployeeIdAsync(employee.Id);
             var enhancedTaskDtos = new List<EnhancedTaskDto>();
 
@@ -236,13 +228,11 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
             task.Status = Domain.Enums.TaskStatus.Pending;
             task.CompletedDate = null;
             
-            // Update due date if provided
             if (dto.NewDueDate.HasValue)
             {
                 task.DueDate = dto.NewDueDate.Value;
             }
 
-            // Store reopen reason in notes
             if (!string.IsNullOrWhiteSpace(dto.Reason))
             {
                 task.Notes = string.IsNullOrWhiteSpace(task.Notes) 
@@ -271,7 +261,6 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
         {
             var taskDto = _mapper.Map<TaskDto>(task);
 
-            // Employee name
             if (task.Employee != null)
             {
                 taskDto.EmployeeName = $"{task.Employee.FirstName} {task.Employee.LastName}";
@@ -284,7 +273,6 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
                     : "Unknown Employee";
             }
 
-            // Task template details - CRITICAL FIX: Get from template only
             if (task.TaskTemplate != null)
             {
                 taskDto.TaskTemplateName = task.TaskTemplate.Name;
@@ -314,7 +302,6 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
                 }
             }
 
-            // Assigned by user details
             if (task.AssignedByUser != null)
             {
                 taskDto.AssignedByName = $"{task.AssignedByUser.FirstName} {task.AssignedByUser.LastName}";
@@ -349,16 +336,14 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
                 AssignedDate = task.AssignedDate,
                 DueDate = task.DueDate,
                 CompletedDate = task.CompletedDate,
-                Priority = 1, // Default priority
+                Priority = 1, 
                 HrComments = task.Notes
             };
 
-            // Employee name
             enhancedDto.EmployeeName = task.Employee != null 
                 ? $"{task.Employee.FirstName} {task.Employee.LastName}" 
                 : "Unknown Employee";
 
-            // Task template details - CRITICAL FIX: Get from template only
             if (task.TaskTemplate != null)
             {
                 enhancedDto.TaskTemplateName = task.TaskTemplate.Name;
@@ -376,12 +361,10 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
                 enhancedDto.RequiresDocumentUpload = false;
             }
 
-            // Calculate overdue status
             enhancedDto.IsOverdue = task.DueDate < now && task.Status != Domain.Enums.TaskStatus.Completed;
             enhancedDto.DaysUntilDue = (int)(task.DueDate - now).TotalDays;
             enhancedDto.DaysOverdue = task.DueDate < now ? (int)(now - task.DueDate).TotalDays : 0;
 
-            // Documents
             if (task.Documents != null && task.Documents.Any())
             {
                 enhancedDto.Documents = task.Documents.Select(d => new TaskDocumentDto
@@ -400,7 +383,6 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
                 }).ToList();
             }
 
-            // Permissions
             enhancedDto.CanUploadDocument = enhancedDto.RequiresDocumentUpload && 
                                            task.Status != Domain.Enums.TaskStatus.Completed;
             enhancedDto.CanMarkComplete = task.Status != Domain.Enums.TaskStatus.Completed;

@@ -13,8 +13,6 @@ namespace EmployeeOnboarding_DDMS.Infrastructure.Repositories
         {
             _dbContext = dbContext;
         }
-
-        // CRUD Operations
         public async Task<TaskTemplate?> GetByIdAsync(int id)
         {
             return await _dbContext.TaskTemplates.FindAsync(id);
@@ -43,8 +41,6 @@ namespace EmployeeOnboarding_DDMS.Infrastructure.Repositories
             _dbContext.TaskTemplates.Remove(entity);
             await _dbContext.SaveChangesAsync();
         }
-
-        // Custom Operations
         public async Task<IEnumerable<TaskTemplate>> GetActiveTemplatesAsync()
         {
             return await _dbContext.TaskTemplates

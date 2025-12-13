@@ -420,7 +420,7 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
             return new AdminUserDto
             {
                 UserId = user.Id,
-                EmployeeId = user.Employee?.Id,  // Include EmployeeId if Employee relationship exists
+                EmployeeId = user.Employee?.Id,  
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
@@ -433,14 +433,14 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
 
         private static int MapToSpecRole(UserRole role) => role switch
         {
-            UserRole.AdminHR => 0,  // Admin/HR unified
+            UserRole.AdminHR => 0,  
             UserRole.Employee => 1,
             _ => 1
         };
 
         private static UserRole MapToDomainRole(int roleId) => roleId switch
         {
-            0 => UserRole.AdminHR,  // Admin/HR unified
+            0 => UserRole.AdminHR,  
             1 => UserRole.Employee,
             _ => UserRole.Employee
         };

@@ -13,8 +13,6 @@ namespace EmployeeOnboarding_DDMS.Infrastructure.Repositories
         {
             _dbContext = dbContext;
         }
-
-        // CRUD Operations
         public async Task<User?> GetByIdAsync(int id)
         {
             return await _dbContext.Users.FindAsync(id);
@@ -43,8 +41,6 @@ namespace EmployeeOnboarding_DDMS.Infrastructure.Repositories
             _dbContext.Users.Remove(entity);
             await _dbContext.SaveChangesAsync();
         }
-
-        // Custom Operations
         public async Task<User?> GetByEmailAsync(string email)
         {
             return await _dbContext.Users
@@ -60,7 +56,7 @@ namespace EmployeeOnboarding_DDMS.Infrastructure.Repositories
         public async Task<(IEnumerable<User> users, int total)> GetPagedAsync(int pageNumber, int pageSize, string? search)
         {
             var query = _dbContext.Users
-                .Include(u => u.Employee)  // Include Employee relationship for EmployeeId
+                .Include(u => u.Employee) 
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))

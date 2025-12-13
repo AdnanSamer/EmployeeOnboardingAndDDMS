@@ -15,9 +15,7 @@ namespace EmployeeOnboarding_DDMS.Aplication.DTOs.Tasks
         public Domain.Enums.TaskStatus Status { get; set; }
         public DateTime AssignedDate { get; set; }
         public DateTime DueDate { get; set; }
-        public DateTime? CompletedDate { get; set; }
-        
-        // Enhanced properties
+        public DateTime? CompletedDate { get; set; }       
         public bool IsOverdue { get; set; }
         public int DaysUntilDue { get; set; }
         public int DaysOverdue { get; set; }

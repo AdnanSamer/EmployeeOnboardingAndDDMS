@@ -32,7 +32,6 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
                 var tasks = await _taskRepository.GetAllAsync();
                 var documents = await _documentRepository.GetAllAsync();
 
-                // Materialize collections to avoid multiple enumerations
                 var employeeList = employees?.ToList() ?? new List<Domain.Entities.Employee>();
                 var taskList = tasks?.ToList() ?? new List<Domain.Entities.OnboardingTask>();
                 var documentList = documents?.ToList() ?? new List<Domain.Entities.Document>();
@@ -73,7 +72,6 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
                 var completedCount = taskList.Count(t => t.Status == Domain.Enums.TaskStatus.Completed);
                 var totalCount = taskList.Count;
                 
-                // Calculate percentage as integer (0-100)
                 var completionPercentage = totalCount > 0
                     ? (int)Math.Round((double)completedCount / totalCount * 100)
                     : 0;

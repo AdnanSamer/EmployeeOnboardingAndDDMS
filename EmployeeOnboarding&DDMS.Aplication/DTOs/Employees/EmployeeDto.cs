@@ -18,15 +18,12 @@ namespace EmployeeOnboarding_DDMS.Aplication.DTOs.Employees
         public string? Position { get; set; }
         public EmploymentStatus EmploymentStatus { get; set; }
         public OnboardingStatus OnboardingStatus { get; set; }
-        public DateTime? OnboardingCompletedDate { get; set; }
-        
-        // Address fields
+        public DateTime? OnboardingCompletedDate { get; set; }        
         public string? StreetAddress { get; set; }
         public string? City { get; set; }
         public string? State { get; set; }
         public string? PostalCode { get; set; }
-        public string? Country { get; set; }
-        
+        public string? Country { get; set; }       
         public DateTime Created { get; set; }
         public DateTime? LastModified { get; set; }
     }

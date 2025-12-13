@@ -13,8 +13,6 @@ namespace EmployeeOnboarding_DDMS.Infrastructure.Repositories
         {
             _dbContext = dbContext;
         }
-
-        // CRUD Operations
         public async Task<Document?> GetByIdAsync(int id)
         {
             return await _dbContext.Documents.FindAsync(id);
@@ -44,7 +42,6 @@ namespace EmployeeOnboarding_DDMS.Infrastructure.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        // Custom Operations
         public async Task<IEnumerable<Document>> GetByTaskIdAsync(int taskId)
         {
             return await _dbContext.Documents

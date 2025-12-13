@@ -51,7 +51,6 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
                 return new Response<DocumentDto>("File size exceeds 10 MB limit.");
             }
 
-            // Validate file type - check both content type and extension
             var allowedContentTypes = new[] { "application/pdf" };
             var allowedExtensions = new[] { ".pdf" };
             var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
@@ -62,29 +61,24 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
                 return new Response<DocumentDto>("Only PDF files are allowed.");
             }
 
-            // Check if task exists
             var task = await _taskRepository.GetByIdAsync(taskId);
             if (task == null)
             {
                 return new Response<DocumentDto>("Task not found.");
             }
 
-            // Get current version
             var currentVersion = await _documentRepository.GetCurrentVersionAsync(taskId);
             var nextVersion = currentVersion != null ? currentVersion.Version + 1 : 1;
 
-            // Mark old versions as not current
             if (currentVersion != null)
             {
                 currentVersion.IsCurrentVersion = false;
                 await _documentRepository.UpdateAsync(currentVersion);
             }
 
-            // Generate file name
             var fileName = $"{taskId}_{nextVersion}_{DateTime.UtcNow:yyyyMMddHHmmss}.pdf";
             var folderPath = Path.Combine("uploads", "documents", taskId.ToString());
 
-            // Save file using file storage service
             var relativeFilePath = await _fileStorageService.SaveFileAsync(file.OpenReadStream(), fileName, folderPath);
 
             var document = new Document
@@ -159,13 +153,11 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
                 return new Response<DocumentDto>("Document not found.");
             }
 
-            // Business rule: Can only review documents with status = Pending
             if (document.Status != DocumentStatus.Pending)
             {
                 return new Response<DocumentDto>($"Document cannot be reviewed. Current status: {document.Status}");
             }
 
-            // Business rule: If rejected, comments are mandatory
             if (dto.Status == DocumentStatus.Rejected && string.IsNullOrWhiteSpace(dto.Comments))
             {
                 return new Response<DocumentDto>("Comments are required when rejecting a document.");
@@ -175,15 +167,13 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
             document.ReviewedBy = dto.ReviewedBy;
             document.ReviewedDate = DateTime.UtcNow;
             document.ReviewComments = dto.Comments;
-            document.Comments = dto.Comments; // Keep for backward compatibility
+            document.Comments = dto.Comments; 
 
             await _documentRepository.UpdateAsync(document);
             var documentDto = _mapper.Map<DocumentDto>(document);
 
-            // Send email notification to employee
             try
             {
-                // Get task and employee details
                 var task = await _taskRepository.GetByIdAsync(document.OnboardingTaskId);
                 var employee = task != null ? await _employeeRepository.GetByIdAsync(task.EmployeeId) : null;
                 
@@ -192,7 +182,6 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
                     var employeeName = $"{employee.FirstName} {employee.LastName}";
                     var taskName = task.TaskTemplate?.Name ?? "Onboarding Task";
                     
-                    // Get reviewer name
                     var reviewer = await _userRepository.GetByIdAsync(dto.ReviewedBy);
                     var reviewerName = "HR Team";
                     if (reviewer?.Employee != null)
@@ -226,7 +215,6 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
             }
             catch (Exception ex)
             {
-                // Log error but don't fail document review
                 Console.WriteLine($"Failed to send document review email: {ex.Message}");
             }
 

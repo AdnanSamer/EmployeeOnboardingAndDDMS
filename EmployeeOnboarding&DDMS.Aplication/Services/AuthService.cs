@@ -58,7 +58,7 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
                 LastName = user.LastName,
                 Role = user.Role,
                 Token = token,
-                Expires = DateTime.UtcNow.AddHours(8), // Token expires in 8 hours
+                Expires = DateTime.UtcNow.AddHours(8),
                 MustChangePassword = user.MustChangePassword
             };
 
@@ -67,13 +67,11 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
 
         public async Task<Response<AuthResponseDto>> RegisterAsync(RegisterDto registerDto)
         {
-            // Check if email already exists
             if (await _userRepository.EmailExistsAsync(registerDto.Email))
             {
                 return new Response<AuthResponseDto>("Email already exists.");
             }
 
-            // Hash password
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.Password);
 
             var user = new User
@@ -119,14 +117,13 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
                 return new Response<bool>("Current password is incorrect.");
             }
 
-            // Validate new password
             if (newPassword.Length < 8)
             {
                 return new Response<bool>("Password must be at least 8 characters.");
             }
 
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
-            user.MustChangePassword = false; // Clear the flag after password change
+            user.MustChangePassword = false; 
             await _userRepository.UpdateAsync(user);
 
             return new Response<bool>(true, "Password changed successfully.");
@@ -138,7 +135,7 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
             var secretKey = jwtSettings["SecretKey"] ?? "YourSuperSecretKeyThatShouldBeAtLeast32CharactersLong!";
             var issuer = jwtSettings["Issuer"] ?? "EmployeeOnboardingDDMS";
             var audience = jwtSettings["Audience"] ?? "EmployeeOnboardingDDMS";
-            var expiryMinutes = int.Parse(jwtSettings["ExpiryMinutes"] ?? "480"); // 8 hours default
+            var expiryMinutes = int.Parse(jwtSettings["ExpiryMinutes"] ?? "480"); 
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);

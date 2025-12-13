@@ -16,9 +16,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             _dashboardService = dashboardService;
         }
 
-        /// <summary>
-        /// Get dashboard statistics
-        /// </summary>
         [HttpGet("stats")]
         public async Task<ActionResult<Response<DashboardStatsDto>>> GetDashboardStats()
         {
@@ -37,9 +34,6 @@ namespace EmployeeOnboarding_DDMS.Controllers
             }
         }
 
-        /// <summary>
-        /// Get employee progress for all employees in onboarding
-        /// </summary>
         [HttpGet("progress")]
         public async Task<ActionResult<Response<IEnumerable<EmployeeProgressDto>>>> GetEmployeeProgress()
         {

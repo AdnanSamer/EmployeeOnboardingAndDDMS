@@ -29,20 +29,17 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
 
         public async Task<Response<EmployeeDto>> CreateEmployeeAsync(CreateEmployeeDto dto)
         {
-            // Validate hire date is not in the future
             if (dto.HireDate > DateTime.UtcNow.Date)
             {
                 return new Response<EmployeeDto>("Hire date cannot be in the future.");
             }
 
-            // Check if email already exists
             var existingEmployee = await _employeeRepository.GetByEmailAsync(dto.Email);
             if (existingEmployee != null)
             {
                 return new Response<EmployeeDto>("Employee with this email already exists.");
             }
 
-            // Generate employee number
             var employeeNumber = await GenerateEmployeeNumberAsync();
 
             var employee = new Employee
@@ -68,7 +65,6 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
 
             var createdEmployee = await _employeeRepository.AddAsync(employee);
             
-            // Automatically create user account with default password
             var defaultPassword = "TempPass123!";
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(defaultPassword);
             
@@ -80,17 +76,15 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
                 LastName = dto.LastName,
                 Role = UserRole.Employee,
                 IsActive = true,
-                MustChangePassword = true, // Force password change on first login
+                MustChangePassword = true, 
                 CreatedBy = dto.CreatedBy.ToString()
             };
             
             await _userRepository.AddAsync(user);
             
-            // CRITICAL FIX: Link user to employee
             createdEmployee.UserId = user.Id;
             await _employeeRepository.UpdateAsync(createdEmployee);
             
-            // Send welcome email with login credentials
             try
             {
                 await _emailService.SendWelcomeEmailAsync(
@@ -101,7 +95,6 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
             }
             catch (Exception ex)
             {
-                // Log error but don't fail employee creation
                 Console.WriteLine($"Failed to send welcome email: {ex.Message}");
             }
             
@@ -118,7 +111,6 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
                 return new Response<EmployeeDto>("Employee not found.");
             }
 
-            // Validate hire date is not in the future
             if (dto.HireDate > DateTime.UtcNow.Date)
             {
                 return new Response<EmployeeDto>("Hire date cannot be in the future.");
@@ -161,7 +153,6 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
             var query = await _employeeRepository.GetAllAsync();
             var employees = query.AsQueryable();
 
-            // Apply filters
             if (!string.IsNullOrEmpty(filter.Department))
             {
                 employees = employees.Where(e => e.Department == filter.Department);
@@ -210,12 +201,8 @@ namespace EmployeeOnboarding_DDMS.Aplication.Services
                 return new Response<bool>("Employee not found.");
             }
 
-            // Soft delete: Set employment status to Inactive
             employee.EmploymentStatus = EmploymentStatus.Inactive;
             await _employeeRepository.UpdateAsync(employee);
-
-            // Note: Documents archival is handled at the database level through cascade
-            // All documents remain accessible for compliance purposes
 
             return new Response<bool>(true, "Employee deactivated successfully. All documents archived for compliance.");
         }
